@@ -1,13 +1,14 @@
 package com.bng.entity;
 
-// Generated 13 Nov, 2013 1:13:35 PM by Hibernate Tools 3.4.0.CR1
+// Generated 5 Mar, 2014 2:37:46 PM by Hibernate Tools 4.0.0
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "mxdata")
 public class Mxdata implements java.io.Serializable {
 
-	private int id;
+	private Integer id;
 	private byte[] data;
 	private Set<MxgraphVersion> mxgraphVersions = new HashSet<MxgraphVersion>(0);
 	private Set<Mxgraph> mxgraphs = new HashSet<Mxgraph>(0);
@@ -27,25 +28,21 @@ public class Mxdata implements java.io.Serializable {
 	public Mxdata() {
 	}
 
-	public Mxdata(int id) {
-		this.id = id;
-	}
-
-	public Mxdata(int id, byte[] data, Set<MxgraphVersion> mxgraphVersions,
+	public Mxdata(byte[] data, Set<MxgraphVersion> mxgraphVersions,
 			Set<Mxgraph> mxgraphs) {
-		this.id = id;
 		this.data = data;
 		this.mxgraphVersions = mxgraphVersions;
 		this.mxgraphs = mxgraphs;
 	}
 
 	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

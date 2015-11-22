@@ -9,8 +9,6 @@
 		<property name="scheduler" ref="scheduler"></property>	
 		<property name="tps" value="${scheduler.tps}"></property>
 		<property name="serverBaseUrl" value="${scheduler.basePath}"></property>
-		<property name="hardwareUrl" value="${scheduler.hardwareUrl}"></property>
-		<property name="tpsUrl" value="${scheduler.tpsUrl}"></property>
 		<property name="blackoutHoursMonitor" ref="blackoutHoursMonitor"></property>
 		<property name="telephonyIps">
 			<list>

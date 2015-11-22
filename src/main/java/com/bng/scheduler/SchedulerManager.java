@@ -56,8 +56,8 @@ public class SchedulerManager implements Serializable {
 	private DelayQueue<JobTimerObject> pauseJobQueue =  new DelayQueue<JobTimerObject>();	//for pausing for a certain time before every retry attempt
 
 	public static String serverBaseUrl;
-	public static String tpsUrl;
-	public static String hardwareUrl;
+	public static final String tpsUrl = "function=2&argument=0";
+	public static final String hardwareUrl = "function=1&argument=1&service=1";
 
 	private boolean allJobsPaused = false;
 	private int tps;
@@ -380,7 +380,7 @@ public class SchedulerManager implements Serializable {
 		}
 	}
 
-	synchronized void startJob(Service service,int... retry) {
+	synchronized void startJob(Service service,int retry) {		//retry can be initial OR retry depending upon the difference of MaxRetry & RemainingRetry
 		try {
 			String jobName = service.getJobname();
 
@@ -398,11 +398,7 @@ public class SchedulerManager implements Serializable {
 					"starting job: " + jobName + " & tps : " + tps
 							+ " & interval : " + interval);
 
-			MsisdnList msisdnList;
-			if(retry.length>0)
-				msisdnList= new MsisdnList(service.getJobname(),service.isStarcopy(),retry[0],(service.getMaxRetry()>0?true:false));
-			else
-				msisdnList= new MsisdnList(service.getJobname(),service.isStarcopy(),(service.getMaxRetry()>0?true:false));
+			MsisdnList msisdnList= new MsisdnList(service.getJobname(),service.isStarcopy(),retry,(service.getMaxRetry()>0?true:false),service.isRecorddedication());
 			Logger.sysLog(LogValues.info, this.getClass().getName(),
 					"getting initial msisdn for job: " + jobName);
 			SimpleTrigger trigger1 = TriggerBuilder
@@ -442,8 +438,7 @@ public class SchedulerManager implements Serializable {
 							&& jobKey.getGroup().equalsIgnoreCase(
 									JobState.JOB_GROUP)) {
 
-						processEndingJob(jobKey.getName(), jobKey.getGroup(),
-								JobState.STOPPED);
+						processEndingJob(jobKey.getName(), jobKey.getGroup());
 						Logger.sysLog(LogValues.info,
 								this.getClass().getName(),
 								"deleted job: " + jobKey.getName() + " --> "
@@ -578,7 +573,7 @@ public class SchedulerManager implements Serializable {
 		}
 		String oldStatus = serviceBo.stopJob(jobName);
 		if (oldStatus.equalsIgnoreCase(JobState.RUNNING)) {
-			String status = processEndingJob(jobName, jobGroup, JobState.STOPPED);
+			String status = processEndingJob(jobName, jobGroup);
 			if(status.equalsIgnoreCase("ok"))
 				rescheduleRunningJobs();
 			else 
@@ -587,7 +582,7 @@ public class SchedulerManager implements Serializable {
 		return "ok";
 	}
 
-	public String processEndingJob(String jobName, String jobGroup, String status) {
+	public String processEndingJob(String jobName, String jobGroup) {
 		JobKey jobKey = new JobKey(jobName, jobGroup);
 		JobDetail jobDetail;
 		try {
@@ -595,15 +590,13 @@ public class SchedulerManager implements Serializable {
 			jobDetail = scheduler.getJobDetail(jobKey);
 			Service service = (Service) jobDetail.getJobDataMap().get(
 					JobA.service);
-			service.setStatus(status);
 			MsisdnList msisdnList = (MsisdnList) jobDetail.getJobDataMap().get(
 					JobA.msisdns);
 			jobDetail.getJobDataMap().put(JobA.service, service);
 			jobDetail.getJobDataMap().put(JobA.msisdns, msisdnList);
 			scheduler.addJob(jobDetail, true);
 			msisdnList.updateMsisdnsForStopJob();
-			// service.setStatus(JobState.STOPPED);
-			// serviceBo.update(service);
+//			serviceBo.update(service);
 			matchers.remove(KeyMatcher.keyEquals(jobKey));
 			scheduler.getListenerManager().addJobListener(new JobListener(),
 					matchers);
@@ -820,22 +813,6 @@ public class SchedulerManager implements Serializable {
 
 	public void setMatchers(List<Matcher<JobKey>> matchers) {
 		this.matchers = matchers;
-	}
-
-	public String getHardwareUrl() {
-		return hardwareUrl;
-	}
-
-	public void setHardwareUrl(String hardwareUrl) {
-		this.hardwareUrl = hardwareUrl;
-	}
-
-	public String getTpsUrl() {
-		return tpsUrl;
-	}
-
-	public void setTpsUrl(String tpsUrl) {
-		this.tpsUrl = tpsUrl;
 	}
 
 }

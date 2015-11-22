@@ -60,7 +60,9 @@ public class JobA implements Job {
 						Logger.sysLog(LogValues.error, this.getClass().getName(), coreException.GetStack(e));
 					}
 				}
-				Event event = generateEvent(service,msisdn.getMsisdn());
+//				vid=1;
+//				hardware=1;
+				Event event = generateEvent(service,msisdn);
 				Logger.sysLog(LogValues.debug, this.getClass().getName(), "("+service.getJobname()+")adding event to queue(original) : "+event.toString());
 				schedulerManager.getJmsTemplate().send(schedulerManager.getQueue(),getMessageCreator(Utility.convertObjectToJsonStr(event)));
 				Logger.sysLog(LogValues.info, this.getClass().getName(), "("+service.getJobname()+")adding event to queue(original) : "+event.toString());
@@ -75,10 +77,14 @@ public class JobA implements Job {
 		}
 	}
 
-	private Event generateEvent(Service service,String msisdn) {
+	private Event generateEvent(Service service,Msisdn msisdn) {
 		Event event = new Event();
 		
-		event.setaPartyMsisdn(service.getObdClis().get((int) Math.random()* service.getObdClis().size()).getCli());
+		if(service.isRecorddedication()){
+			event.setaPartyMsisdn(msisdn.getCli());
+			event.setJobType("recorddedication");
+		}
+		else event.setaPartyMsisdn(service.getObdClis().get((int) Math.random()* service.getObdClis().size()).getCli());
 		event.setEvent(11);
 		event.setSubEvent(1);
 		event.setvId(this.vid);
@@ -89,7 +95,7 @@ public class JobA implements Job {
 		event.setSeekBytes("");
 		event.setFilePath("");
 		event.setSubEventCause(-1);
-		event.setbPartyMsisdn(msisdn);
+		event.setbPartyMsisdn(msisdn.getMsisdn());
 		event.setServiceName(service.getMxgraph().getServiceName());
 		event.setService(JobStarter.service);
 		event.setCoreToTelephony(JobStarter.coreToTelephony);

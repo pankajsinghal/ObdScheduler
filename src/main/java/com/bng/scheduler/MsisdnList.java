@@ -19,7 +19,7 @@ public class MsisdnList {
 	
 	private MsisdnBo msisdnBo;
 	
-	private int jobRunningState=JobRunningState.initial.ordinal();
+	private int jobRunningState;
 	private final int size = 1000;
 	private ArrayList<Msisdn> elements;
 	private String Jobname;
@@ -28,7 +28,7 @@ public class MsisdnList {
 	private boolean isLastChunk = false;
 	private boolean jobOver = false;
 	private boolean isStarcopy = false;
-	private boolean retryEnabled=false;
+	private boolean retryEnabled=false;			//only for starcopy
 	private Integer lastNumberState=null; 
 
 	private ArrayList<Msisdn> elementsScheduled;
@@ -38,27 +38,21 @@ public class MsisdnList {
 	private int starcopyRetryInterval=2*60*1000;	// 60 min in millis
 	private int starcopyScheduledInterval=1*60*1000			;	//5 min in millis
 	
-	public MsisdnList(String Jobname,boolean starcopy, boolean retryEnabled) {
-		elements = new ArrayList<Msisdn>();
-		this.Jobname = Jobname;
-		this.isStarcopy = starcopy;
-		msisdnBo = JobStarter.msisdnBo;
-		this.retryEnabled = retryEnabled;
-		extractMsisdns();
-	}
+	private boolean isRecordDedication=false;		//no retry for this
 	
-	public MsisdnList(String Jobname,boolean starcopy,int retry, boolean retryEnabled) {
+	public MsisdnList(String Jobname,boolean starcopy,int retry, boolean retryEnabled, boolean isRecordDedication) {
 		elements = new ArrayList<Msisdn>();
 		this.Jobname = Jobname;
 		this.isStarcopy = starcopy;
 		msisdnBo = JobStarter.msisdnBo;
 		jobRunningState = retry;
 		this.retryEnabled = retryEnabled;
+		this.isRecordDedication = isRecordDedication;
 		extractMsisdns();
 	}
 
 	public void extractMsisdns() {
-		if(!isStarcopy){
+		if(!isStarcopy && !isRecordDedication){
 			Logger.sysLog(LogValues.info, this.getClass().getName(),"jobRunningState : "+JobRunningState.values()[jobRunningState]);
 			elements = (ArrayList<Msisdn>)msisdnBo.listMsisdn(Jobname,jobRunningState);
 			if(elements==null ) {
@@ -82,8 +76,30 @@ public class MsisdnList {
 			starcopyExtractMsisdnsScheduled();
 			if(retryEnabled)starcopyExtractMsisdnsRetry();
 		}
+		else if(isRecordDedication){
+			recordDedicationExtractMsisdnsScheduled();
+		}
 	}
 	
+	private void recordDedicationExtractMsisdnsScheduled() {
+		elements = (ArrayList<Msisdn>)msisdnBo.listMsisdn(Jobname, JobRunningState.recordDedication.ordinal());
+		if(elements==null ) {
+			Logger.sysLog(LogValues.info, this.getClass().getName(), Jobname+" : extracted msisdns returned null");
+			jobOver = true;
+			jobRunningState = JobRunningState.failed.ordinal();
+			return;
+		}
+		else if(elements.size()<1){
+			Logger.sysLog(LogValues.info, this.getClass().getName(), Jobname+" : extracted msisdns list is < 1.");
+			jobOver = true;
+			jobRunningState = JobRunningState.jobover.ordinal();
+			return;
+		}
+		if(elements.size() < size) isLastChunk = true;
+		Logger.sysLog(LogValues.info, this.getClass().getName(), "extracted "+elements.size()+" more msisdns for "+ Jobname +"(recordDedication scheduled)");
+	
+	}
+
 	private void starcopyExtractMsisdnsRetry() {
 		elementsRetry = (ArrayList<Msisdn>)msisdnBo.listMsisdn(Jobname,JobRunningState.retryStarcopy.ordinal());
 		starcopyLastRetryExtractedTime = System.currentTimeMillis();
@@ -109,13 +125,44 @@ public class MsisdnList {
 	}
 
 	public Msisdn get(){
-		if(!isStarcopy){
-			return getNormal();
-		}
-		else{
+		if(isStarcopy){
 			return getStarcopy();
 		}
+		else if(isRecordDedication){
+			return getRecordDedication();
+		}
+		else{
+			return getNormal();
+		}
 		
+	}
+
+	private Msisdn getRecordDedication() {
+		if(elements==null || elements.size()<1) recordDedicationExtractMsisdnsScheduled();
+		if(elements==null) {
+			//this failed is due to msisdn not found while the job was running(something might have happened while pausing or any other thing)
+			Logger.sysLog(LogValues.info, this.getClass().getName(), "inside getRecordDedication(). No msisdns found");
+			String query = "update service set status = '"+JobState.FAILED+"' where jobname = '"+Jobname+"'";
+			JobStarter.schedulerManager.getJmsTemplate().send(JobStarter.schedulerManager.getQueuedb(), getMessageCreator(query));
+			jobOver = true;
+			return null;
+		}
+		Msisdn msisdn= elements.remove(0);
+		msisdn.setStatus(JobState.MSISDN_STATE_TO_CORE_ENGINE);
+		if(!isLastChunk && elements.size() <1)
+		{
+			recordDedicationExtractMsisdnsScheduled();
+		}
+		else if(isLastChunk && elements.size() <1)
+		{
+			Logger.sysLog(LogValues.info, this.getClass().getName(), "["+Jobname+"] last chunck is over and JobOver [true]");
+			jobOver = true;		
+			lastNumberState = jobRunningState;
+			jobRunningState = JobRunningState.jobover.ordinal();
+		}
+		Logger.sysLog(LogValues.info, this.getClass().getName(), "("+Jobname+")processing : "+msisdn.getMsisdn());
+		Logger.sysLog(LogValues.info, this.getClass().getName(), "("+Jobname+")isLastChunk ("+isLastChunk+") & currentPosition ("+currentPosition+") & elements.size() ("+elements.size()+")");
+		return msisdn;
 	}
 
 	private Msisdn getStarcopy() {
@@ -136,17 +183,15 @@ public class MsisdnList {
 		}
 		Msisdn msisdn=null;
 		if(elementsScheduled.size()>0){
-			msisdn = elementsScheduled.get(0);
-			elementsScheduled.remove(msisdn);
+			msisdn = elementsScheduled.remove(0);
 			jobRunningState = JobRunningState.initial.ordinal();
 		}
 		else if(retryEnabled && elementsRetry.size()>0){
-			msisdn = elementsRetry.get(0);
-			elementsRetry.remove(msisdn);
+			msisdn = elementsRetry.remove(0);
 			jobRunningState = JobRunningState.retry.ordinal();
 		}
 		else{
-			msisdn = new Msisdn(1, "no_msisdn", "", "", "");
+			msisdn = new Msisdn(1,"", "no_msisdn", "", "", "");
 			return msisdn;
 		}
 		msisdn.setStatus(JobState.MSISDN_STATE_TO_CORE_ENGINE);
@@ -321,7 +366,8 @@ public class MsisdnList {
 
 	public void resetSettingsToRetry(){
 		jobOver=false;
-		jobRunningState = JobRunningState.retry.ordinal();
+		if(isRecordDedication) jobRunningState = JobRunningState.initial.ordinal(); 
+		else jobRunningState = JobRunningState.retry.ordinal();
 		isLastChunk=false;
 	}
 	

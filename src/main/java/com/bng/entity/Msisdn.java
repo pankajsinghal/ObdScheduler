@@ -3,6 +3,7 @@ package com.bng.entity;
 public class Msisdn {
 
 	private Integer id;
+	private String cli;
 	private String msisdn;
 	private String status;
 	private String failedreason_status;
@@ -11,10 +12,11 @@ public class Msisdn {
 	public Msisdn() {
 	}
 
-	public Msisdn(Integer id, String msisdn, String status,
+	public Msisdn(Integer id, String cli, String msisdn, String status,
 			String failedreason_status, String reason) {
 		super();
 		this.id = id;
+		this.cli = cli;
 		this.msisdn = msisdn;
 		this.status = status;
 		this.failedreason_status = failedreason_status;
@@ -27,6 +29,14 @@ public class Msisdn {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getCli() {
+		return cli;
+	}
+
+	public void setCli(String cli) {
+		this.cli = cli;
 	}
 
 	public String getMsisdn() {
@@ -63,9 +73,9 @@ public class Msisdn {
 
 	@Override
 	public String toString() {
-		return "Msisdn [id=" + id + ", msisdn=" + msisdn + ", status=" + status
-				+ ", failedreason_status=" + failedreason_status + ", reason="
-				+ reason + "]";
+		return "Msisdn [id=" + id + ", cli=" + cli + ", msisdn=" + msisdn
+				+ ", status=" + status + ", failedreason_status="
+				+ failedreason_status + ", reason=" + reason + "]";
 	}
 
 }

@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bng</groupId>
-	<artifactId>obd_Scheduler</artifactId>
+	<artifactId>obd_scheduler</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>obd_Scheduler Maven Webapp</name>
+	<name>obd_scheduler Maven Webapp</name>
 	<properties>
 		<spring.version>3.2.4.RELEASE</spring.version>
 	</properties>
@@ -253,7 +253,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>obd_Scheduler</finalName>
+		<finalName>obd_scheduler</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -1,14 +1,15 @@
 package com.bng.entity;
 
-// Generated 13 Nov, 2013 1:13:35 PM by Hibernate Tools 3.4.0.CR1
+// Generated 5 Mar, 2014 2:37:46 PM by Hibernate Tools 4.0.0
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -26,10 +27,10 @@ import javax.persistence.UniqueConstraint;
 		"service_name", "shortcode" }))
 public class Mxgraph implements java.io.Serializable {
 
-	private int id;
+	private Integer id;
 	private Mxdata mxdata;
 	private String serviceName;
-	private short produtionFlag;
+	private boolean produtionFlag;
 	private Date productionDate;
 	private String type;
 	private String shortcode;
@@ -40,10 +41,8 @@ public class Mxgraph implements java.io.Serializable {
 	public Mxgraph() {
 	}
 
-	public Mxgraph(int id, Mxdata mxdata, String serviceName,
-			short produtionFlag, Date productionDate, String type,
-			String shortcode, String callType) {
-		this.id = id;
+	public Mxgraph(Mxdata mxdata, String serviceName, boolean produtionFlag,
+			Date productionDate, String type, String shortcode, String callType) {
 		this.mxdata = mxdata;
 		this.serviceName = serviceName;
 		this.produtionFlag = produtionFlag;
@@ -53,11 +52,10 @@ public class Mxgraph implements java.io.Serializable {
 		this.callType = callType;
 	}
 
-	public Mxgraph(int id, Mxdata mxdata, String serviceName,
-			short produtionFlag, Date productionDate, String type,
-			String shortcode, String callType, Set<Service> services,
+	public Mxgraph(Mxdata mxdata, String serviceName, boolean produtionFlag,
+			Date productionDate, String type, String shortcode,
+			String callType, Set<Service> services,
 			Set<MxgraphVersion> mxgraphVersions) {
-		this.id = id;
 		this.mxdata = mxdata;
 		this.serviceName = serviceName;
 		this.produtionFlag = produtionFlag;
@@ -70,12 +68,13 @@ public class Mxgraph implements java.io.Serializable {
 	}
 
 	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -99,16 +98,16 @@ public class Mxgraph implements java.io.Serializable {
 	}
 
 	@Column(name = "prodution_flag", nullable = false)
-	public short getProdutionFlag() {
+	public boolean isProdutionFlag() {
 		return this.produtionFlag;
 	}
 
-	public void setProdutionFlag(short produtionFlag) {
+	public void setProdutionFlag(boolean produtionFlag) {
 		this.produtionFlag = produtionFlag;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "production_date", nullable = false, length = 23)
+	@Column(name = "production_date", nullable = false, length = 19)
 	public Date getProductionDate() {
 		return this.productionDate;
 	}

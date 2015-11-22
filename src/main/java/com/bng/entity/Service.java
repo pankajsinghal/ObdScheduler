@@ -1,8 +1,6 @@
 package com.bng.entity;
 
-// Generated 21 Dec, 2013 4:40:52 PM by Hibernate Tools 4.0.0
-
-import static javax.persistence.GenerationType.IDENTITY;
+// Generated 5 Mar, 2014 2:37:46 PM by Hibernate Tools 4.0.0
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,6 +40,7 @@ public class Service implements java.io.Serializable {
 	private int maxRetry;
 	private int remainingRetry;
 	private boolean starcopy;
+	private boolean recorddedication;
 	private List<ObdCli> obdClis = new ArrayList<ObdCli>(0);
 
 	public Service() {
@@ -49,7 +49,7 @@ public class Service implements java.io.Serializable {
 	public Service(Mxgraph mxgraph, ObdBlackoutHours obdBlackoutHours,
 			String jobname, Date startDate, Date endDate, Date startTime,
 			Date endTime, int priority, String status, int maxRetry,
-			int remainingRetry, boolean starcopy) {
+			int remainingRetry, boolean starcopy, boolean recorddedication) {
 		this.mxgraph = mxgraph;
 		this.obdBlackoutHours = obdBlackoutHours;
 		this.jobname = jobname;
@@ -62,12 +62,14 @@ public class Service implements java.io.Serializable {
 		this.maxRetry = maxRetry;
 		this.remainingRetry = remainingRetry;
 		this.starcopy = starcopy;
+		this.recorddedication = recorddedication;
 	}
 
 	public Service(Mxgraph mxgraph, ObdBlackoutHours obdBlackoutHours,
 			String jobname, Date startDate, Date endDate, Date startTime,
 			Date endTime, int priority, String status, int maxRetry,
-			int remainingRetry, boolean starcopy, List<ObdCli> obdClis) {
+			int remainingRetry, boolean starcopy, boolean recorddedication,
+			List<ObdCli> obdClis) {
 		this.mxgraph = mxgraph;
 		this.obdBlackoutHours = obdBlackoutHours;
 		this.jobname = jobname;
@@ -80,6 +82,7 @@ public class Service implements java.io.Serializable {
 		this.maxRetry = maxRetry;
 		this.remainingRetry = remainingRetry;
 		this.starcopy = starcopy;
+		this.recorddedication = recorddedication;
 		this.obdClis = obdClis;
 	}
 
@@ -124,7 +127,7 @@ public class Service implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "start_date", nullable = false, length = 0)
+	@Column(name = "start_date", nullable = false, length = 10)
 	public Date getStartDate() {
 		return this.startDate;
 	}
@@ -134,7 +137,7 @@ public class Service implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "end_date", nullable = false, length = 0)
+	@Column(name = "end_date", nullable = false, length = 10)
 	public Date getEndDate() {
 		return this.endDate;
 	}
@@ -144,7 +147,7 @@ public class Service implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.TIME)
-	@Column(name = "start_time", nullable = false, length = 0)
+	@Column(name = "start_time", nullable = false, length = 8)
 	public Date getStartTime() {
 		return this.startTime;
 	}
@@ -154,7 +157,7 @@ public class Service implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.TIME)
-	@Column(name = "end_time", nullable = false, length = 0)
+	@Column(name = "end_time", nullable = false, length = 8)
 	public Date getEndTime() {
 		return this.endTime;
 	}
@@ -206,6 +209,15 @@ public class Service implements java.io.Serializable {
 
 	public void setStarcopy(boolean starcopy) {
 		this.starcopy = starcopy;
+	}
+
+	@Column(name = "recorddedication", nullable = false)
+	public boolean isRecorddedication() {
+		return this.recorddedication;
+	}
+
+	public void setRecorddedication(boolean recorddedication) {
+		this.recorddedication = recorddedication;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "service")

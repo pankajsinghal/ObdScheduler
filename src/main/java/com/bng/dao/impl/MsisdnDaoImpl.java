@@ -33,7 +33,59 @@ public class MsisdnDaoImpl implements MsisdnDao {// , Serializable {
 			return getFailedList(jobname);
 		else if(jobRunningState==JobRunningState.retryStarcopy.ordinal())
 			return getFailedListStarcopy(jobname);
+		else if(jobRunningState==JobRunningState.recordDedication.ordinal())
+			return getScheduledListRecordDedication(jobname);
 		else return null;
+	}
+
+	private List<Msisdn> getScheduledListRecordDedication(String jobname) {
+		String tablename = "obd_msisdn_" + jobname;
+		String SQL = "select * from " + tablename
+				+ " where"
+				    + " msisdn not in (select "
+				    + "     msisdn"
+				        + " from "
+				            + tablename
+				        + " where"
+				            + " status like ?"
+				                + " or status like ?)"
+				        + " and status like ?"
+				        + " and `calltime` <= NOW()"
+				        + " and `endtime` >= NOW()"
+				+ " group by msisdn limit 1000";
+		List<Msisdn> msisdns = null;
+		try{
+		msisdns = jdbcTemplateObject.query(SQL,
+				new Object[] { JobState.MSISDN_STATE_TO_CORE_ENGINE,JobState.PICKED,JobState.SCHEDULED }, new MsisdnMapper());
+		Logger.sysLog(LogValues.info, this.getClass().getName(),"msisdn extracted : "+msisdns.size());
+		}
+		catch(BadSqlGrammarException e){
+			Logger.sysLog(LogValues.error, this.getClass().getName(),
+					coreException.GetStack(e));
+			if(e.getCause() != null && e.getCause() instanceof MySQLSyntaxErrorException) {
+				MySQLSyntaxErrorException ex = (MySQLSyntaxErrorException)e.getCause();
+		        if(ex.getMessage().contains("doesn't exist")){
+		        	return msisdns;
+		        }
+		    }
+		}
+		catch (Exception e) {
+			Logger.sysLog(LogValues.error, this.getClass().getName(),
+					coreException.GetStack(e));
+			return msisdns;
+		}
+
+		if(msisdns==null || msisdns.size()<=0)
+			return msisdns;
+		StringBuilder builder = new StringBuilder("update " + tablename
+				+ " set status = ? where status = ? and id in ( ");
+		for(Msisdn msisdn : msisdns){
+			builder.append(msisdn.getId()+",");
+		}
+		builder.deleteCharAt(builder.length()-1);
+		builder.append(")");
+		jdbcTemplateObject.update(builder.toString(), JobState.PICKED, JobState.SCHEDULED);
+		return msisdns;
 	}
 
 	private List<Msisdn> getFailedListStarcopy(String jobname) {
@@ -138,6 +190,8 @@ public class MsisdnDaoImpl implements MsisdnDao {// , Serializable {
 					coreException.GetStack(e));
 			return msisdns;
 		}
+		if(msisdns==null && msisdns.size()<=0)
+			return msisdns;
 		SQL = "update " + tablename
 				+ " set status = ? where status = ? limit 1000";
 		jdbcTemplateObject.update(SQL, JobState.PICKED, JobState.SCHEDULED);

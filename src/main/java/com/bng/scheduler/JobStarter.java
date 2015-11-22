@@ -10,6 +10,7 @@ import com.bng.core.utils.LogValues;
 import com.bng.core.utils.Logger;
 import com.bng.core.utils.coreException;
 import com.bng.entity.Service;
+import com.bng.scheduler.JobState.JobRunningState;
 
 public class JobStarter implements Runnable, Serializable {
 
@@ -44,7 +45,11 @@ public class JobStarter implements Runnable, Serializable {
 					}
 					Iterator listIterator = jobToStart.iterator();
 					while (listIterator.hasNext()) {
-						schedulerManager.startJob((Service) listIterator.next());
+						Service s = (Service) listIterator.next();
+						if(s.getMaxRetry()==s.getRemainingRetry())
+							schedulerManager.startJob(s,JobRunningState.initial.ordinal());
+						if(s.getMaxRetry()>0 && s.getRemainingRetry() >=0 && (s.getMaxRetry()-s.getRemainingRetry()>0))
+							schedulerManager.startJob(s,JobRunningState.retry.ordinal());
 					}
 					schedulerManager.rescheduleRunningJobs();
 				}

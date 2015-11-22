@@ -1,14 +1,15 @@
 package com.bng.entity;
 
-// Generated 13 Nov, 2013 1:13:35 PM by Hibernate Tools 3.4.0.CR1
+// Generated 5 Mar, 2014 2:37:46 PM by Hibernate Tools 4.0.0
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -22,7 +23,7 @@ import javax.persistence.TemporalType;
 @Table(name = "obd_blackout_hours")
 public class ObdBlackoutHours implements java.io.Serializable {
 
-	private int id;
+	private Integer id;
 	private Date blackoutStart;
 	private Date blackoutEnd;
 	private Set<Service> services = new HashSet<Service>(0);
@@ -30,32 +31,31 @@ public class ObdBlackoutHours implements java.io.Serializable {
 	public ObdBlackoutHours() {
 	}
 
-	public ObdBlackoutHours(int id, Date blackoutStart, Date blackoutEnd) {
-		this.id = id;
+	public ObdBlackoutHours(Date blackoutStart, Date blackoutEnd) {
 		this.blackoutStart = blackoutStart;
 		this.blackoutEnd = blackoutEnd;
 	}
 
-	public ObdBlackoutHours(int id, Date blackoutStart, Date blackoutEnd,
+	public ObdBlackoutHours(Date blackoutStart, Date blackoutEnd,
 			Set<Service> services) {
-		this.id = id;
 		this.blackoutStart = blackoutStart;
 		this.blackoutEnd = blackoutEnd;
 		this.services = services;
 	}
 
 	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	@Temporal(TemporalType.TIME)
-	@Column(name = "blackout_start", nullable = false, length = 16)
+	@Column(name = "blackout_start", nullable = false, length = 8)
 	public Date getBlackoutStart() {
 		return this.blackoutStart;
 	}
@@ -65,7 +65,7 @@ public class ObdBlackoutHours implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.TIME)
-	@Column(name = "blackout_end", nullable = false, length = 16)
+	@Column(name = "blackout_end", nullable = false, length = 8)
 	public Date getBlackoutEnd() {
 		return this.blackoutEnd;
 	}

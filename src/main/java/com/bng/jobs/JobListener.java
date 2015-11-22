@@ -45,7 +45,7 @@ public class JobListener implements org.quartz.JobListener {
 		if(!msisdnList.isStarcopy())Logger.sysLog(LogValues.info, this.getClass().getName(), "("+service.getJobname()+":"+msisdnList.getJobname()+") msisdnList.isJobOver(): "+msisdnList.isJobOver()+") msisdnList.getJobRunningState(): "+JobRunningState.values[msisdnList.getJobRunningState()].toString());
 		if(msisdnList.isJobOver())
 		{
-			service.setRemainingRetry(service.getRemainingRetry()-1);
+			if(!service.isRecorddedication() && !service.isStarcopy())service.setRemainingRetry(service.getRemainingRetry()-1);
 			if(msisdnList.getJobRunningState()==JobRunningState.jobover.ordinal())
 			{
 				if(service.getRemainingRetry()<0){
@@ -55,8 +55,11 @@ public class JobListener implements org.quartz.JobListener {
 					Logger.sysLog(LogValues.info, this.getClass().getName(), "inside retry");
 					JobStarter.serviceBo.update(service);// update "remaining entry" change in db
 					msisdnList.resetSettingsToRetry();
-//					System.out.println("sending obd_msisdn_" + service.getJobname()+" to scheduled");
-					JobStarter.msisdnBo.resetRetryStatus(service.getJobname());
+					if(!service.isRecorddedication()){
+						
+	//					System.out.println("sending obd_msisdn_" + service.getJobname()+" to scheduled");
+						JobStarter.msisdnBo.resetRetryStatus(service.getJobname());
+					}
 					service.setStatus(JobState.RETRY);	//because running-status jobs can be rescheduled. we don't want to block the channels..:P
 					JobStarter.schedulerManager.startTimer(context.getJobDetail().getKey(), JobStarter.retryWaitTimeInSec);
 					Logger.sysLog(LogValues.info, this.getClass().getName(), "("+service.getJobname()+":"+msisdnList.getJobname()+") new jobover status : msisdnList.isJobOver(): "+msisdnList.isJobOver()+") msisdnList.getJobRunningState(): "+JobRunningState.values[msisdnList.getJobRunningState()].toString());

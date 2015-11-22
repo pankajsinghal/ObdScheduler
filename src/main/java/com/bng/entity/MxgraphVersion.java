@@ -1,12 +1,13 @@
 package com.bng.entity;
 
-// Generated 13 Nov, 2013 1:13:35 PM by Hibernate Tools 3.4.0.CR1
+// Generated 5 Mar, 2014 2:37:46 PM by Hibernate Tools 4.0.0
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,7 +23,7 @@ import javax.persistence.Version;
 @Table(name = "mxgraph_version")
 public class MxgraphVersion implements java.io.Serializable {
 
-	private int id;
+	private Integer id;
 	private Integer version;
 	private Mxdata mxdata;
 	private Mxgraph mxgraph;
@@ -32,13 +33,8 @@ public class MxgraphVersion implements java.io.Serializable {
 	public MxgraphVersion() {
 	}
 
-	public MxgraphVersion(int id) {
-		this.id = id;
-	}
-
-	public MxgraphVersion(int id, Mxdata mxdata, Mxgraph mxgraph,
+	public MxgraphVersion(Mxdata mxdata, Mxgraph mxgraph,
 			Integer userMappingId, Date createdDate) {
-		this.id = id;
 		this.mxdata = mxdata;
 		this.mxgraph = mxgraph;
 		this.userMappingId = userMappingId;
@@ -46,12 +42,13 @@ public class MxgraphVersion implements java.io.Serializable {
 	}
 
 	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -95,7 +92,7 @@ public class MxgraphVersion implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_date", length = 23)
+	@Column(name = "created_date", length = 19)
 	public Date getCreatedDate() {
 		return this.createdDate;
 	}

@@ -36,7 +36,8 @@ public class Event implements Serializable{
     private int cic;
     private String protocol;
     private String coreToTelephony = "";
-    private String obdlist=""; 
+    private String obdlist="";
+    private String jobType=""; 
 
     public int getvId() {
 		return vId;
@@ -219,6 +220,14 @@ public class Event implements Serializable{
 				+ ", cic=" + cic + ", protocol=" + protocol
 				+ ", coreToTelephony=" + coreToTelephony + ", obdlist="
 				+ obdlist + "]";
+	}
+
+	public String getJobType() {
+		return jobType;
+	}
+
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
 	}
 
 	

@@ -1,10 +1,12 @@
 package com.bng.entity;
 
-// Generated 13 Nov, 2013 1:13:35 PM by Hibernate Tools 3.4.0.CR1
+// Generated 5 Mar, 2014 2:37:46 PM by Hibernate Tools 4.0.0
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -17,26 +19,26 @@ import javax.persistence.Table;
 @Table(name = "obd_cli")
 public class ObdCli implements java.io.Serializable {
 
-	private int id;
+	private Integer id;
 	private Service service;
 	private String cli;
 
 	public ObdCli() {
 	}
 
-	public ObdCli(int id, Service service, String cli) {
-		this.id = id;
+	public ObdCli(Service service, String cli) {
 		this.service = service;
 		this.cli = cli;
 	}
 
 	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

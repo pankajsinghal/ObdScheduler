@@ -28,6 +28,7 @@ public class JobState {
         initial,
         retry,
         retryStarcopy,
+        recordDedication,
         jobover,
         failed;
         public static final JobRunningState values[] = values();

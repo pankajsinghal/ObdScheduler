@@ -23,6 +23,9 @@ public class MsisdnMapper implements RowMapper<Msisdn>{
 			case "id":
 				msisdn.setId(rs.getInt("id"));
 				break;
+			case "cli":
+				msisdn.setCli(rs.getString("cli"));
+				break;
 			case "msisdn":
 				msisdn.setMsisdn(rs.getString("msisdn"));
 				break;

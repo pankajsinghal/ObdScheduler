@@ -123,8 +123,8 @@ public class ServiceDaoImpl implements ServiceDao {// , Serializable {
 			//intraday
 			crit = session.createCriteria(ObdBlackoutHours.class);
 			
-			Criterion start = Restrictions.le("blackoutStart", new ObdBlackoutHours(1,new Date(),new Date()).getBlackoutStart());
-			Criterion end = Restrictions.gt("blackoutEnd",new ObdBlackoutHours(1,new Date(),new Date()).getBlackoutStart());
+			Criterion start = Restrictions.le("blackoutStart", new ObdBlackoutHours(new Date(),new Date()).getBlackoutStart());
+			Criterion end = Restrictions.gt("blackoutEnd",new ObdBlackoutHours(new Date(),new Date()).getBlackoutStart());
 			List list = crit.add(Restrictions.conjunction().add(start).add(end))
 					.list();
 			if(list.isEmpty())
@@ -135,9 +135,9 @@ public class ServiceDaoImpl implements ServiceDao {// , Serializable {
 		else{
 			//interday
 			crit = session.createCriteria(ObdBlackoutHours.class);
-			Date d = new ObdBlackoutHours(1,new Date(),new Date()).getBlackoutStart();
+			Date d = new ObdBlackoutHours(new Date(),new Date()).getBlackoutStart();
 			Criterion start = Restrictions.le("blackoutStart", d);
-			Criterion end = Restrictions.gt("blackoutEnd", new ObdBlackoutHours(1,new Date(),new Date()).getBlackoutStart());
+			Criterion end = Restrictions.gt("blackoutEnd", new ObdBlackoutHours(new Date(),new Date()).getBlackoutStart());
 			List list = crit.add(Restrictions.disjunction().add(start).add(end))
 					.list();
 			if(list.isEmpty())
