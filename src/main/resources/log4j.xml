@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration debug="false">
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%5p %d{ISO8601} [%t][%x] %c - %m%n" />
+		</layout>
+	</appender>
+	<appender name="logs" class="org.apache.log4j.rolling.RollingFileAppender">
+		<param name="file" value="${catalina.base}/logs/logs.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name="FileNamePattern" value="${catalina.base}/logs/%d{yyyy-MM-dd_HH}_logs.gz" />
+		</rollingPolicy>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%5p %d{ISO8601} [%t][%x] %c:%L - %m%n" />
+		</layout>
+	</appender>
+	<!--  <appender name="APP" class="org.apache.log4j.rolling.RollingFileAppender"> 
+		<param name="file" value="${catalina.base}/logs/app.log" /> <param name="append" 
+		value="true" /> <param name="encoding" value="UTF-8" /> <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy"> 
+		<param name="FileNamePattern" value="${catalina.base}/logs/%d_app.gz" /> 
+		</rollingPolicy> <layout class="org.apache.log4j.PatternLayout"> <param name="ConversionPattern" 
+		value="%5p %d{ISO8601} [%t][%x] %c - %m%n" /> </layout> </appender> <appender 
+		name="JHUB" class="org.apache.log4j.rolling.RollingFileAppender"> <param 
+		name="file" value="${catalina.base}/logs/jhub.log" /> <param name="append" 
+		value="true" /> <param name="encoding" value="UTF-8" /> <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy"> 
+		<param name="FileNamePattern" value="${catalina.base}/logs/%d_jhub.gz" /> 
+		</rollingPolicy> <layout class="org.apache.log4j.PatternLayout"> <param name="ConversionPattern" 
+		value="%5p %d{ISO8601} [%t][%x] %c - %m%n" /> </layout> </appender> <logger 
+		name="com.lumata" additivity="false"> <level value="all" /> <appender-ref 
+		ref="APP" /> </logger> <logger name="ins" additivity="true"> <level value="error" 
+		/> <appender-ref ref="JHUB" /> </logger> <logger name="com.be3a" additivity="true"> 
+		<level value="all" /> <appender-ref ref="JHUB" /> </logger> <logger name="ins.JhubFactory" 
+		additivity="true"> <level value="all" /> <appender-ref ref="JHUB" /> </logger> -->
+
+	<logger name="com.bng" additivity="true">
+		<level value="info" />
+	</logger>
+
+	<logger name="com" additivity="true">
+		<level value="info" />
+	</logger>
+
+	<logger name="org" additivity="true">
+		<level value="error" />
+	</logger>
+
+	<logger name="org.springframework" additivity="true">
+		<level value="error" />
+	</logger>
+	
+	<logger name="java.io" additivity="true">
+		<level value="error" />
+	</logger>
+	
+	<logger name="java.net" additivity="true">
+		<level value="error" />
+	</logger>
+	
+	<root>
+		<priority value="info" />
+		<appender-ref ref="logs" />
+		<!-- <appender-ref ref="CONSOLE" />  -->
+	</root>
+</log4j:configuration>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="blackoutHoursMonitor" class="com.bng.scheduler.BlackoutHoursMonitor">
+		<property name="msisdnBo" ref="msisdnBo"></property>
+		<property name="serviceBo" ref="serviceBo"></property>
+		<property name="taskExecutor" ref="taskExecutor"></property>
+		<property name="jobEnder" ref="jobEnder"></property>
+		<property name="jobStarter" ref="jobStarter"></property>
+		<property name="schedulerManager" ref="schedulerManager"></property>
+		<property name="jobResumer" ref="jobResumer"></property>
+	</bean>
+
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+ 		<property name="corePoolSize" value="3" />
+		<property name="maxPoolSize" value="3" />
+		<property name="waitForTasksToCompleteOnShutdown" value="true" />
+	</bean>
+
+</beans>

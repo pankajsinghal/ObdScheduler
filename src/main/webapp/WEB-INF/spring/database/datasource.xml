@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+		p:location="/WEB-INF/classes/connection.properties" />
+
+	<!-- <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+		lazy-init="false" p:driverClass="${DbConnection.scp.JdbcDrivers}" p:jdbcUrl="${DbConnection.scp.DSNurl}" 
+		p:user="${DbConnection.scp.User}" p:password="${DbConnection.scp.Password}" 
+		p:autoCommitOnClose="true" p:maxPoolSize="${DbConnection.scp.maxPool}" p:minPoolSize="${DbConnection.scp.minPool}" 
+		p:initialPoolSize="${DbConnection.scp.initialPool}" p:preferredTestQuery="Select 
+		1" p:testConnectionOnCheckout="true" p:testConnectionOnCheckin="true" p:debugUnreturnedConnectionStackTraces="false" 
+		p:forceIgnoreUnresolvedTransactions="true" p:connectionTesterClassName="com.mchange.v2.c3p0.impl.DefaultConnectionTester" 
+		p:automaticTestTable="Select 1" p:maxIdleTime="120" p:idleConnectionTestPeriod="10" 
+		destroy-method="close" /> -->
+
+	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${DbConnection.scp.JdbcDrivers}" />
+		<property name="jdbcUrl" value="${DbConnection.scp.DSNurl}" />
+		<property name="username" value="${DbConnection.scp.User}" />
+		<property name="password" value="${DbConnection.scp.Password}" />
+		<property name="idleConnectionTestPeriodInSeconds" value="10" />
+		<property name="connectionTestStatement" value="Select 1" />
+		<property name="idleMaxAgeInMinutes" value="240" />
+		<property name="maxConnectionsPerPartition"
+			value="${DbConnection.scp.maxConnectionsPerPartition}" />
+		<property name="minConnectionsPerPartition"
+			value="${DbConnection.scp.minConnectionsPerPartition}" />
+		<property name="partitionCount" value="${DbConnection.scp.partitionCount}" />
+		<property name="acquireIncrement" value="5" />
+		<property name="statementsCacheSize" value="100" />
+		<property name="acquireRetryDelayInMs" value="10" />
+		<property name="deregisterDriverOnClose" value="true" />
+	</bean>
+</beans>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<bean id="serviceBo" class="com.bng.bo.impl.ServiceBoImpl">
+		<property name="serviceDao" ref="serviceDao"></property>
+	</bean>
+
+	<bean id="serviceDao" class="com.bng.dao.impl.ServiceDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+</beans>

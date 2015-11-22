@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="schedulerManager" class="com.bng.scheduler.SchedulerManager" init-method="init">
+		<property name="msisdnBo" ref="msisdnBo"></property>
+		<property name="serviceBo" ref="serviceBo"></property>
+		<property name="scheduler" ref="scheduler"></property>	
+		<property name="tps" value="${scheduler.tps}"></property>
+		<property name="serverBaseUrl" value="${scheduler.basePath}"></property>
+		<property name="hardwareUrl" value="${scheduler.hardwareUrl}"></property>
+		<property name="tpsUrl" value="${scheduler.tpsUrl}"></property>
+		<property name="blackoutHoursMonitor" ref="blackoutHoursMonitor"></property>
+		<property name="telephonyIps">
+			<list>
+				<value>${telephony.ip}</value>
+			</list>
+		</property>
+		<property name="jmsTemplate" ref="jmsTemplate" />
+		<property name="queue" value="original"></property>
+	</bean>
+	
+	<!-- The quartz scheduler configuration -->
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
+	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsPooledConnectionFactory" />
+	</bean>
+
+</beans>

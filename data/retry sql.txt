@@ -1,0 +1,10 @@
+SELECT msisdn,reason,
+       CASE reason
+         WHEN 'NoAnswer' THEN (case when NoAnswer>0 then NoAnswer end)
+         WHEN 'NetworkBusy' THEN (case when NetworkBusy>0 then NetworkBusy end)
+		 WHEN 'CallRejection' THEN (case when CallRejection>0 then CallRejection end)
+		 WHEN 'Unavailable' THEN (case when Unavailable>0 then Unavailable end)
+       END 
+as p
+FROM obd_msisdn_pankaj
+HAVING p IS NOT NULL
